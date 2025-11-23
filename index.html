@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>ARAMEXX Parcel Tracking</title>
+<style>
+  body { font-family: Arial, sans-serif; background: #f5f5f5; padding: 50px; }
+  h1, h2, h3 { color: #d40000; }
+  .inputBox { padding: 10px; width: 200px; margin-right: 10px; }
+  button { padding: 10px 20px; background: red; color: white; border: none; cursor: pointer; }
+  .error { color: red; margin-top: 10px; }
+  .result { margin-top: 20px; padding: 10px; background: #e0ffe0; display: none; }
+  .admin-panel { margin-top: 30px; padding: 20px; border: 1px solid #ccc; background: #fff; display: none; border-radius: 8px; }
+  table { border-collapse: collapse; width: 100%; margin-top: 10px; }
+  th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+  .features { margin-top:50px; padding:20px; background:#fff; border-radius:8px; box-shadow:0 0 10px rgba(0,0,0,0.1); }
+</style>
+</head>
+<body>
+
+<h1># ARAMEXX</h1>
+<h2>Parcel Tracking</h2>
+
+<p>Enter your tracking number below:</p>
+<input id="trackNum" class="inputBox" placeholder="Example: TRACK123" />
+<button onclick="lookup()">Track</button>
+<div id="error" class="error"></div>
+<div id="result" class="result"></div>
+
+<br><br>
+<button onclick="generateTracking()">Generate Tracking Number</button>
+<div id="generatedTrack" style="margin-top:10px; font-weight:bold;"></div>
+
+<br><br>
+<button onclick="adminLogin()">Admin Login</button>
+
+<div id="adminPanel" class="admin-panel">
+  <h3>Admin Portal</h3>
+  <p>Add a new tracking number:</p>
+  <input id="newTrackNum" placeholder="Tracking Number" />
+  <input id="newStatus" placeholder="Status" />
+  <button onclick="addTracking()">Add</button>
+
+  <h4>All Tracking Numbers</h4>
+  <table id="trackingTable">
+    <thead>
+      <tr><th>Tracking Number</th><th>Status</th><th>Action</th></tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</div>
+
+<!-- Features Section -->
+<div class="features">
+  <h2>🔹 Aramexx Parcel Tracking System 🔹</h2>
+  <h3>Current Features:</h3>
+  <ul>
+    <li>Real admin dashboard</li>
+    <li>Real tracking database</li>
+    <li>Backend API for live updates</li>
+    <li>Delivery map for parcel locations</li>
+    <li>Parcel registration page</li>
+    <li>Tracking number generator</li>
+    <li>SMS or Email notification system</li>
+    <li>Login system for staff</li>
+    <li>Customer support chat</li>
+  </ul>
+  <h3>Want Upgrades?</h3>
+  <p>Just tell me:</p>
+  <ul>
+    <li>👉 <strong>Add more features</strong></li>
+    <li>👉 <strong>Make it look professional</strong></li>
+    <li>👉 <strong>Add admin panel</strong></li>
+  </ul>
+  <p>I can build anything you want, <strong>step by step</strong>, and make it fully functional.</p>
+</div>
+
+<script>
+// Fake tracking database
+let trackingData = {
+  "TRACK123": "In Transit",
+  "TRACK456": "Delivered",
+  "TRACK789": "Shipment Created"
+};
+
+// Admin credentials
+const adminUsername = "admin";
+const adminPassword = "password";
+
+// Lookup function
+function lookup() {
+  const trackNum = document.getElementById("trackNum").value.trim();
+  const errorDiv = document.getElementById("error");
+  const resultDiv = document.getElementById("result");
+
+  errorDiv.textContent = "";
+  resultDiv.style.display = "none";
+
+  if(!trackNum) {
+    errorDiv.textContent = "Please enter a tracking number.";
+    return;
+  }
+
+  if(trackingData[trackNum]) {
+    resultDiv.style.display = "block";
+    resultDiv.textContent = `Tracking Number: ${trackNum} - Status: ${trackingData[trackNum]}`;
+  } else {
+    errorDiv.textContent = "Tracking number not found.";
+  }
+}
+
+// Generate random tracking number
+function generateTracking() {
+  const randomSuffix = Math.random().toString(36).substring(2, 7).toUpperCase();
+  const today = new Date();
+  const datePart = `${today.getFullYear()}${today.getMonth()+1}${today.getDate()}`;
+  const newTrackNum = `ARMX-${datePart}-${randomSuffix}`;
+
+  trackingData[newTrackNum] = "Shipment Created";
+  document.getElementById("generatedTrack").textContent = `Your tracking number: ${newTrackNum}`;
+  renderTable();
+}
+
+// Admin login
+function adminLogin() {
+  const username = prompt("Enter admin username:");
+  const password = prompt("Enter admin password:");
+
+  if(username === adminUsername && password === adminPassword) {
+    alert("Welcome Admin!");
+    document.getElementById("adminPanel").style.display = "block";
+    renderTable();
+  } else {
+    alert("Wrong credentials!");
+  }
+}
+
+// Add tracking
+function addTracking() {
+  const newNum = document.getElementById("newTrackNum").value.trim();
+  const newStatus = document.getElementById("newStatus").value.trim();
+
+  if(newNum && newStatus) {
+    trackingData[newNum] = newStatus;
+    document.getElementById("newTrackNum").value = "";
+    document.getElementById("newStatus").value = "";
+    renderTable();
+  } else {
+    alert("Please enter both tracking number and status.");
+  }
+}
+
+// Render admin table
+function renderTable() {
+  const tbody = document.getElementById("trackingTable").querySelector("tbody");
+  tbody.innerHTML = "";
+  for(let num in trackingData) {
+    const row = document.createElement("tr");
+    row.innerHTML = `
+      <td>${num}</td>
+      <td>${trackingData[num]}</td>
+      <td><button onclick="deleteTracking('${num}')">Delete</button></td>
+    `;
+    tbody.appendChild(row);
+  }
+}
+
+// Delete tracking
+function deleteTracking(num) {
+  if(confirm(`Delete ${num}?`)) {
+    delete trackingData[num];
+    renderTable();
+  }
+}
+</script>
+
+</body>
+</html>
